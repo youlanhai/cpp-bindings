@@ -1,0 +1,4 @@
+[submodule "lua-support/lua"]
+	path = lua-support/lua
+	url = https://github.com/lua/lua.git
+	branch = v5.3
