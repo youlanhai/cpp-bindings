@@ -6,8 +6,8 @@
 //////////////////////////////////////////////////////////////////////
 #pragma once
 #include "IScript.hpp"
-#include "StringRef.hpp"
 #include <typeinfo>
+#include <string>
 
 // predefine
 NS_LS_BEGIN
@@ -198,7 +198,6 @@ bool lslua_to_enum(lua_State *L, int idx, T &v, LSLuaError *err)
 
 LS_API bool lslua_to_string(lua_State *L, int idx, char *&str, LSLuaError *err);
 LS_API bool lslua_to_string(lua_State *L, int idx, const char *&str, LSLuaError *err);
-LS_API bool lslua_to_string(lua_State *L, int idx, StringRef &str, LSLuaError *err);
 LS_API bool lslua_to_string(lua_State *L, int idx, std::string &str, LSLuaError *err);
 
 /** 将对象按给定类型解析为指针。注意：返回的指针可能为空。
@@ -383,7 +382,6 @@ inline void lslua_push(lua_State* L, double v) { lua_pushnumber(L, (lua_Number)v
 
 inline void lslua_push(lua_State* L, const char* v) { lua_pushstring(L, v); }
 inline void lslua_push(lua_State* L, const std::string& v) { lua_pushlstring(L, v.c_str(), v.size()); }
-inline void lslua_push(lua_State* L, const StringRef& v) { lua_pushlstring(L, v.c_str(), v.size()); }
 
 #if defined(__arm__) || defined(_WIN32)
 inline void lslua_push(lua_State* L, long v) { lslua_push_int64(L, (int64_t)v); }

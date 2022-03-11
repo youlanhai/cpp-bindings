@@ -875,23 +875,6 @@ LS_API bool lslua_to_string(lua_State *L, int idx, const char *&str, LSLuaError 
     return false;
 }
 
-LS_API bool lslua_to_string(lua_State *L, int idx, StringRef &str, LSLuaError *err)
-{
-    if(lslua_isstring(L, idx))
-    {
-        size_t length;
-        const char *p = lua_tolstring(L, idx, &length);
-        str.assign(p, length);
-        return true;
-    }
-    if(err)
-    {
-        err->index = idx;
-        err->expectedType = "string";
-    }
-    return false;
-}
-
 LS_API bool lslua_to_string(lua_State *L, int idx, std::string &str, LSLuaError *err)
 {
     if(lslua_isstring(L, idx))
