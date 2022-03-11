@@ -75,7 +75,7 @@ class Generator(igenerator.IGenerator):
 		to_native = type_mapping.to_native
 
 		type_name = cparser.remove_const_prefix(arg_type.whole_name)
-		if type_name in to_native or arg_type.name in to_native:
+		if type_name in to_native or arg_type.short_name in to_native:
 			return name
 
 		if arg_type.canonical_type:
@@ -92,7 +92,7 @@ class Generator(igenerator.IGenerator):
 	def find_type_conversion_template(self, value_type, conversion_map):
 		type_name = cparser.remove_const_prefix(value_type.whole_name)
 
-		keys = [type_name, value_type.name]
+		keys = [type_name, value_type.short_name]
 		if value_type.canonical_type:
 			keys.append(cparser.remove_const_prefix(value_type.canonical_type.whole_name))
 		if value_type.is_enum:
@@ -109,6 +109,11 @@ class Generator(igenerator.IGenerator):
 				return template
 		return None
 
+	def get_arg_script_name(self, arg_type):
+		name = arg_type.whole_name
+		name = name.rstrip('*')
+		return self.get_new_name(name)
+
 	def get_arg_check(self, arg_info, index, name):
 		arg_type = arg_info.value_type
 		template = self.find_type_conversion_template(arg_type, type_mapping.to_native)
@@ -116,7 +121,7 @@ class Generator(igenerator.IGenerator):
 		tpl = Template(template, [{
 			"arg_idx" : index,
 			"out_value" : name,
-			"scriptname" : self.get_new_name(arg_type.whole_name),
+			"scriptname" : self.get_arg_script_name(arg_type),
 		}, export_config])
 
 		return str(tpl)
@@ -128,7 +133,7 @@ class Generator(igenerator.IGenerator):
 
 		tpl = Template(template, [{
 			"in_value" : name,
-			"scriptname" : self.get_new_name(arg_type.whole_name),
+			"scriptname" : self.get_arg_script_name(arg_type),
 			"type_cast" : type_name,
 		}, export_config])
 

@@ -456,10 +456,12 @@ class VariableType(object):
 		self.is_numeric = False
 		self.is_enum = tp.get_canonical().kind == TypeKind.ENUM
 
-		self.whole_name = tp.spelling
+		self.origin_name = tp.spelling
+		self.whole_name = self.origin_name
 		if self.is_const:
 			self.whole_name = remove_const_prefix(self.whole_name)
-		self.name = self.whole_name.split("::")[-1]
+		self.name = self.whole_name
+		self.short_name = self.whole_name.split("::")[-1]
 
 		if re.search("(short|int|double|float|long|size_t)$", self.name) is not None:
 			self.is_numeric = True
@@ -472,6 +474,7 @@ class VariableType(object):
 	def dump(self, ret):
 		ret["name"] = self.name
 		ret["whole_name"] = self.whole_name
+		ret["origin_name"] = self.origin_name
 		ret["kind"] = str(self.kind)
 		ret["const"] = self.is_const
 		ret["pointer"] = self.is_pointer
@@ -484,21 +487,27 @@ class VariableType(object):
 			ret["canonical_type"] = v
 		return
 
+	def set_as_pointer(self):
+		self.is_pointer = True
+		self.whole_name += "*"
+		self.short_name += "*"
+
+		if self.canonical_type:
+			self.canonical_type.set_as_pointer()
+
+	def set_as_reference(self):
+		self.is_reference = True
+
 	@classmethod
 	def from_type(cls, ntype):
 		t = None
 		if ntype.kind == TypeKind.POINTER:
 			t = cls.from_type(ntype.get_pointee())
-			t.is_pointer = True
-			t.whole_name += "*"
-
-			if t.canonical_type:
-				t.canonical_type.is_pointer = True
-				t.canonical_type.whole_name += "*"
+			t.set_as_pointer()
 
 		elif ntype.kind == TypeKind.LVALUEREFERENCE:
 			t = cls.from_type(ntype.get_pointee())
-			t.is_reference = True
+			t.set_as_reference()
 
 		else:
 			t = cls(ntype)

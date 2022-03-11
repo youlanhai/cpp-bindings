@@ -38,8 +38,8 @@ static int ${signature_name}(lua_State* L)
         {
         #if $type_info.is_constructor
             ${cpp_class_name} *self = new ${cpp_class_name}($arg_list);
-            LSUserData *p = lslua_push_object(L, self, "$lua_class_name", 1);
-            lslua_bind_free_method<${cpp_class_name}>(p);
+            LSUserData *p = lslua_push_object(L, self, 1);
+            lslua_bind_free_method(p, self);
             return 1;
         #elif $func.return_type
             $func.return_type.origin_name ret = self->${func.name}($arg_list);

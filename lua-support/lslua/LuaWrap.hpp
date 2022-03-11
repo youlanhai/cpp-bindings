@@ -245,15 +245,6 @@ void lslua_free_unmanaged_data(void *v)
     delete p;
 }
 
-template <typename T>
-void lslua_bind_free_method(LSUserData *p)
-{
-    if (p != nullptr && p->freeMethod == nullptr)
-    {
-        p->freeMethod = (LSUserData::FreeMethod)lslua_free_unmanaged_data<T>;
-    }
-}
-
 /// 通用gc方法。调用LSUserData的freeMethod方法，来清理内存。
 LS_API int lslua_common_gc(lua_State *L);
 
@@ -319,10 +310,24 @@ LS_API void lslua_push_uint64(lua_State *L, uint64_t v);
 // push系列函数，不能抛出异常
 ////////////////////////////////////////////////////////////////////////////////
 
-inline void lslua_push_iscript(lua_State* L, IScript* script) { IScript::push_script(L, script); }
+/** 重载此方法，对自定义类型执行内存管理或者绑定gc的方法 */
+inline void lslua_post_push(LSUserData *p, void *self) {}
+
+/** 如果构造函数是私有的，重载此方法定义自己的freeMethod */
+template <typename T>
+void lslua_bind_free_method(LSUserData *p, T *self)
+{
+    if (p != nullptr && p->freeMethod == nullptr)
+    {
+        p->freeMethod = (LSUserData::FreeMethod)lslua_free_unmanaged_data<T>;
+    }
+}
+
+LS_API LSUserData* lslua_push_pointer(lua_State* L, void* self, int classIdx, const char* luaClass, const char *cppClass);
+LS_API LSUserData* lslua_push_pointer(lua_State* L, IScript* self, int classIdx, const char* luaClass, const char *cppClass);
 
 template <typename T>
-LSUserData* lslua_push_object(lua_State* L, T* self, const char* className, int classIdx = 0)
+LSUserData* lslua_push_object(lua_State* L, T *self, int classIdx)
 {
     if (self == nullptr)
     {
@@ -330,44 +335,26 @@ LSUserData* lslua_push_object(lua_State* L, T* self, const char* className, int 
         return nullptr;
     }
 
-    if (std::is_base_of<IScript, T>::value)
-    {
-        lslua_push_iscript(L, (IScript*)self);
-        return nullptr;
-    }
-
-    LSUserData* p;
-    if (classIdx != 0)
-    {
-        p = lslua_new_userdata(L, classIdx, 0);
-    }
-    else
-    {
-        const char* cname = lslua_find_type(typeid(*self).name());
-        if (cname != nullptr)
-        {
-            className = cname;
-        }
-        p = lslua_new_userdata(L, className, 0);
-    }
-    p->addr = static_cast<void*>(self);
-    p->freeMethod = nullptr;
-
-    //if (std::is_base_of<IRefCount, T>::value)
-    //{
-    //    lslua_refcount_retain((IRefCount*)self);
-    //    p->freeMethod = (LSUserData::FreeMethod)lslua_refcount_release;
-    //    return nullptr;
-    //}
-
+    LSUserData *p = lslua_push_pointer(L, self, classIdx, nullptr, nullptr);
+    lslua_post_push(p, self);
     return p;
 }
 
-template <>
-LS_API LSUserData* lslua_push_object(lua_State* L, void* self, const char* className, int classIdx);
+template <typename T>
+LSUserData* lslua_push_object(lua_State* L, T *self, const char *luaClass)
+{
+    if (self == nullptr)
+    {
+        lua_pushnil(L);
+        return nullptr;
+    }
 
-inline void lslua_push(lua_State* L, IScript* v) { lslua_push_iscript(L, v); }
+    LSUserData *p = lslua_push_pointer(L, self, 0, luaClass, typeid(*self).name());
+    lslua_post_push(p, self);
+    return p;
+}
 
+inline void lslua_push(lua_State* L, IScript* v) { IScript::push_script(L, v); }
 inline void lslua_push(lua_State* L, bool v) { lua_pushboolean(L, v); }
 inline void lslua_push(lua_State* L, int8_t v) { lua_pushinteger(L, (lua_Integer)v); }
 inline void lslua_push(lua_State* L, uint8_t v) { lua_pushinteger(L, (lua_Integer)v); }

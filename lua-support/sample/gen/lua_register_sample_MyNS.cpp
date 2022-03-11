@@ -29,7 +29,7 @@ static int lua_MyNS_createMyClass(lua_State* L)
         if (true)
         {
             MyNS::MyClass * ret = MyNS::createMyClass();
-            lslua_push_object(L, (MyNS::MyClass*)ret, "myns.MyClass*");
+            lslua_push_object(L, (MyNS::MyClass*)ret, "myns.MyClass");
             return 1;
         }
     }
@@ -39,7 +39,7 @@ static int lua_MyNS_createMyClass(lua_State* L)
         if (lslua_to_string(L, 1, name_, &tolua_err))
         {
             MyNS::MyClass * ret = MyNS::createMyClass(name_);
-            lslua_push_object(L, (MyNS::MyClass*)ret, "myns.MyClass*");
+            lslua_push_object(L, (MyNS::MyClass*)ret, "myns.MyClass");
             return 1;
         }
     }
@@ -51,7 +51,7 @@ static int lua_MyNS_createMyClass(lua_State* L)
             lslua_to_number(L, 2, age_, &tolua_err))
         {
             MyNS::MyClass * ret = MyNS::createMyClass(name_, age_);
-            lslua_push_object(L, (MyNS::MyClass*)ret, "myns.MyClass*");
+            lslua_push_object(L, (MyNS::MyClass*)ret, "myns.MyClass");
             return 1;
         }
     }
@@ -66,7 +66,7 @@ static int lua_MyNS_deleteMyClass(lua_State* L)
     if (argc == 1)
     {
         MyNS::MyClass* p_;
-        if (lslua_to_object(L, 1, p_, "myns.MyClass*", &tolua_err))
+        if (lslua_to_object(L, 1, p_, "myns.MyClass", &tolua_err))
         {
             MyNS::deleteMyClass(p_);
             return 0;
@@ -83,7 +83,7 @@ static int lua_MyNS_print(lua_State* L)
     if (argc == 1)
     {
         MyNS::MyClass* c_;
-        if (lslua_to_object(L, 1, c_, "myns.MyClass*", &tolua_err))
+        if (lslua_to_object(L, 1, c_, "myns.MyClass", &tolua_err))
         {
             MyNS::print(c_);
             return 0;
@@ -100,7 +100,7 @@ static int lua_MyNS_print2(lua_State* L)
     if (argc == 1)
     {
         MyNS::MyClass* c_;
-        if (lslua_to_object(L, 1, c_, "myns.MyClass*", &tolua_err))
+        if (lslua_to_object(L, 1, c_, "myns.MyClass", &tolua_err))
         {
             MyNS::print2(c_);
             return 0;
@@ -442,8 +442,8 @@ static int lua_MyNS_MyClass_MyClass(lua_State* L)
         if (true)
         {
             MyNS::MyClass *self = new MyNS::MyClass();
-            LSUserData *p = lslua_push_object(L, self, "myns.MyClass", 1);
-            lslua_bind_free_method<MyNS::MyClass>(p);
+            LSUserData *p = lslua_push_object(L, self, 1);
+            lslua_bind_free_method(p, self);
             return 1;
         }
     }
@@ -453,8 +453,8 @@ static int lua_MyNS_MyClass_MyClass(lua_State* L)
         if (lslua_to_string(L, 2, name_, &tolua_err))
         {
             MyNS::MyClass *self = new MyNS::MyClass(name_);
-            LSUserData *p = lslua_push_object(L, self, "myns.MyClass", 1);
-            lslua_bind_free_method<MyNS::MyClass>(p);
+            LSUserData *p = lslua_push_object(L, self, 1);
+            lslua_bind_free_method(p, self);
             return 1;
         }
     }
@@ -466,8 +466,8 @@ static int lua_MyNS_MyClass_MyClass(lua_State* L)
             lslua_to_number(L, 3, age_, &tolua_err))
         {
             MyNS::MyClass *self = new MyNS::MyClass(name_, age_);
-            LSUserData *p = lslua_push_object(L, self, "myns.MyClass", 1);
-            lslua_bind_free_method<MyNS::MyClass>(p);
+            LSUserData *p = lslua_push_object(L, self, 1);
+            lslua_bind_free_method(p, self);
             return 1;
         }
     }
@@ -485,7 +485,7 @@ static int lua_MyNS_MyClass_create(lua_State* L)
         if (true)
         {
             MyNS::MyClass * ret = MyNS::MyClass::create();
-            lslua_push_object(L, (MyNS::MyClass*)ret, "myns.MyClass*");
+            lslua_push_object(L, (MyNS::MyClass*)ret, "myns.MyClass");
             return 1;
         }
     }
@@ -704,8 +704,8 @@ static int lua_MyNS_SafeClass_SafeClass(lua_State* L)
         if (true)
         {
             MyNS::SafeClass *self = new MyNS::SafeClass();
-            LSUserData *p = lslua_push_object(L, self, "myns.SafeClass", 1);
-            lslua_bind_free_method<MyNS::SafeClass>(p);
+            LSUserData *p = lslua_push_object(L, self, 1);
+            lslua_bind_free_method(p, self);
             return 1;
         }
     }

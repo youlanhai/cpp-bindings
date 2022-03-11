@@ -1090,28 +1090,35 @@ LS_API void lslua_push_uint64(lua_State *L, uint64_t v)
 #endif
 }
 
-template <>
-LS_API LSUserData* lslua_push_object(lua_State* L, void* self, const char* className, int classIdx)
+LS_API LSUserData* lslua_push_pointer(lua_State* L, void* self, int classIdx, const char* luaClass, const char *cppClass)
 {
-    if (self == nullptr)
-    {
-        lua_pushnil(L);
-        return nullptr;
-    }
-
-    LSUserData* p;
+    LSUserData *p;
     if (classIdx != 0)
     {
         p = lslua_new_userdata(L, classIdx, 0);
     }
     else
     {
-        p = lslua_new_userdata(L, className, 0);
+        if (cppClass != nullptr && *cppClass != '\0')
+        {
+            const char* cname = lslua_find_type(cppClass);
+            if (cname != nullptr)
+            {
+                luaClass = cname;
+            }
+        }
+        p = lslua_new_userdata(L, luaClass, 0);
     }
-    p->addr = static_cast<void*>(self);
-    p->freeMethod = nullptr;
+    p->addr = self;
     return p;
 }
+
+LS_API LSUserData* lslua_push_pointer(lua_State* L, IScript* self, int classIdx, const char* luaClass, const char *cppClass)
+{
+    IScript::push_script(L, self);
+    return nullptr;
+}
+
 
 LS_API void lslua_push(lua_State* L, const LuaFunction& fun)
 {

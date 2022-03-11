@@ -9,7 +9,7 @@
 
 NS_LS_BEGIN
 
-/** Lua函数wrap。不同于LuaSampleFunction，在析构的时候会释放函数引用
+/** Lua函数wrap。 在析构的时候会释放函数引用
  */
 class LS_API LuaFunction : public LuaObject
 {
