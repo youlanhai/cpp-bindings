@@ -88,12 +88,7 @@ LS_API void lslua_register_getset(lua_State *L, const char *name, lua_CFunction 
 LS_API void lslua_register_module_getset(lua_State *L, const char *name, lua_CFunction get, lua_CFunction set);
 
 template <typename T>
-void lslua_register_var(lua_State *L, const char *field, const T& value)
-{
-    lua_pushstring(L, field);
-    lslua_push(L, value);
-    lua_rawset(L, -3);
-}
+void lslua_register_var(lua_State *L, const char *field, const T& value);
 
 template <typename T>
 void lslua_register_var(lua_State *L, const char *field, T *self, const char *className)
@@ -385,5 +380,13 @@ LS_API void lslua_push(lua_State* L, const LuaFunction& fun);
 /** 安全的增加引用。避免因value被回收(弱表)，造成lua获取数组长度错误。 */
 LS_API int lslua_safe_ref(lua_State* L, int table);
 LS_API void lslua_safe_unref(lua_State* L, int table, int ref);
+
+template <typename T>
+inline void lslua_register_var(lua_State *L, const char *field, const T& value)
+{
+    lua_pushstring(L, field);
+    lslua_push(L, value);
+    lua_rawset(L, -3);
+}
 
 NS_LS_END

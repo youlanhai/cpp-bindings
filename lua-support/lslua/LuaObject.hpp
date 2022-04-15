@@ -21,23 +21,23 @@ public:
     static const LuaObject null;
 
     /// 构造一个空对象
-    LuaObject::LuaObject()
+    LuaObject()
     {
     }
 
     /// 通过lua解释器和函数引用，构造包装器
-    LuaObject::LuaObject(lua_State* L, int ref)
+    LuaObject(lua_State* L, int ref)
     {
         setRef(L, ref);
     }
 
     /// 移动构造
-    LuaObject::LuaObject(LuaObject&& other) noexcept
+    LuaObject(LuaObject&& other) noexcept
     {
         steal(other);
     }
 
-    LuaObject::~LuaObject()
+    ~LuaObject()
     {
         destroy();
     }
@@ -45,7 +45,7 @@ public:
     LuaObject(const LuaObject&) = delete;
     const LuaObject& operator=(const LuaObject&) = delete;
 
-    LuaObject& LuaObject::operator=(LuaObject&& other) noexcept
+    LuaObject& operator=(LuaObject&& other) noexcept
     {
         steal(other);
         return *this;
@@ -57,7 +57,7 @@ public:
     operator bool() const { return state_ != nullptr && state_->getLuaState() != nullptr; }
 
     lua_State* getLuaState() { return state_ != nullptr ? state_->getLuaState() : nullptr; }
-    const lua_State* LuaObject::getLuaState() const { return const_cast<LuaObject*>(this)->getLuaState(); }
+    const lua_State* getLuaState() const { return const_cast<LuaObject*>(this)->getLuaState(); }
 
     /// 获取函数的引用
     int getRef() const { return ref_; }

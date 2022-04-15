@@ -6,6 +6,7 @@
 //////////////////////////////////////////////////////////////////////
 #pragma once
 #include "LuaObject.hpp"
+#include "LuaWrap.hpp"
 
 NS_LS_BEGIN
 
@@ -15,11 +16,11 @@ class LS_API LuaFunction : public LuaObject
 {
     int         errorHandle_ = 0;
 public:
-    LuaFunction::LuaFunction()
+    LuaFunction()
     {
     }
 
-    LuaFunction::LuaFunction(lua_State *L, int ref)
+    LuaFunction(lua_State *L, int ref)
         : LuaObject(L, ref)
     {
     }
